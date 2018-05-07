@@ -20,3 +20,4 @@ wsCommunicator.register('confirmPolicy', this, function (data) {
 	//Do your thing here!
 });
 
+wsCommunicator.sendData({eventname: 'hide', payload: '[data-refname=nameinput]'});
