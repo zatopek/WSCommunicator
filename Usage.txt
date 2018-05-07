@@ -1,0 +1,22 @@
+For example:
+
+On interact
+Add the below into the html of an interaction step
+
+<div class="commands" style="display:none;">
+	<div class="command" key="postmessage" onrender="true" eventname="confirmPolicy" policynumber="{Policy Number}" field="value" anotherfield="anothervalue" target="parent"/>
+</div>
+
+
+In window frame
+
+wsCommunicator.register('confirmPolicy', this, function (data) {
+	//data will be 
+	{
+		policynumber: 'XXXXXXXX',
+		field: 'value',
+		anotherfield: 'anothervalue'
+	}
+	//Do your thing here!
+});
+
