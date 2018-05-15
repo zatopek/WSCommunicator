@@ -30,6 +30,13 @@ var wsCommunicator = null;
 			
 		});
 		return {
+			sendDataToInteraction: function (interactionId, data) {
+				console.trace('WSCommunicator: Sending data: ' + JSON.stringify(data));
+				if(windows[interactionId])
+					windows[interactionId].postMessage(JSON.stringify(data), '*');
+				else
+					throw "No such interaction exists";
+			},
 			sendData: function (data) {
 				console.trace('WSCommunicator: Sending data: ' + JSON.stringify(data));
 				for (var window in windows) {

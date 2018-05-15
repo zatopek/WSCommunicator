@@ -80,6 +80,16 @@ initExtensions("WSCommunicator", function (app) {
 				scope: app
 			});
 
+			if (!eventHandlers['click'])
+				eventHandlers['click'] = [];
+
+			eventHandlers['click'].push({
+				fn: function (selector) {
+					$(selector).click();
+				},
+				scope: app
+			});
+
 			window.top.postMessage(JSON.stringify({
 				type: 'object',
 				register: true,
