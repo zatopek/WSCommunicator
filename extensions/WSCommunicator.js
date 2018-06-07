@@ -2,7 +2,7 @@ initExtensions("WSCommunicator", function (app) {
 	$(window).off('beforeunload');
 
 	if (!app.WSCommunicator) {
-		app.WSCommunicator = (function (){
+		app.WSCommunicator = (function () {
 			if (!Number.parseInt)
 				Number.parseInt = parseInt;
 			var eventHandlers = {};
@@ -15,7 +15,7 @@ initExtensions("WSCommunicator", function (app) {
 						for (var handler in eventHandlers[data.eventname]) {
 							try {
 								if (eventHandlers[data.eventname][handler].fn && typeof eventHandlers[data.eventname][handler].fn == 'function') {
-									eventHandlers[data.eventname][handler].fn.call(eventHandlers[data.eventname][handler].scope, data.payload);
+									eventHandlers[data.eventname][handler].fn.call(eventHandlers[data.eventname][handler].scope, data.payload, data.conditions);
 								}
 							} catch (e) {
 								console.error('WSCommunicator: JAS: Failed to call handler');
@@ -51,11 +51,11 @@ initExtensions("WSCommunicator", function (app) {
 
 			eventHandlers['getText'].push({
 				fn: function (selector) {
-					window.top.postMessage(JSON.stringify({ 
-						"eventName": "getText", 
+					window.top.postMessage(JSON.stringify({
+						"eventName": "getText",
 						"interactionId": app.options.autostart.interactionId,
-						 "value": $(selector).text()
-						}), '*');
+						"value": $(selector).text()
+					}), '*');
 				},
 				scope: app
 			});
@@ -84,8 +84,30 @@ initExtensions("WSCommunicator", function (app) {
 				eventHandlers['click'] = [];
 
 			eventHandlers['click'].push({
-				fn: function (selector) {
-					$(selector).click();
+				fn: function (selector, conditions) {
+					var valid = true;
+					for (var condition in conditions) {
+						if (condition == "selector") {
+							valid = valid && $(conditions[condition].selector).text() == conditions[condition].value;
+						}
+						if (condition = "pageName") {
+							valid = valid && app.frameProxy.pm.curPage.pageNavigation.pageReferenceName == conditions[condition].value;
+						}
+					}
+					if (valid) {
+						$(selector).click();
+					}
+				},
+				scope: app
+			});
+
+			if (!eventHandlers['next'])
+				eventHandlers['next'] = [];
+
+			eventHandlers['next'].push({
+				fn: function () {
+					debugger;
+					app.next();
 				},
 				scope: app
 			});
@@ -102,7 +124,7 @@ initExtensions("WSCommunicator", function (app) {
 					<div class="command" key="sharebacknext" onrender="true" target="parent"></div>
 					</div>
 					 */
-					if(this.sharebacknextRegisterd)
+					if (this.sharebacknextRegisterd)
 						return;
 					this.sharebacknextRegisterd = true;
 					app.registerExtension('pageRenderer', function (ctx, page) {
